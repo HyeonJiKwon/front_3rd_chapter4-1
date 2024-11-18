@@ -1,3 +1,8 @@
+## 배포 다이어그램
+
+![배포다이어그램](https://github.com/user-attachments/assets/c04b1518-b125-41bb-8e24-0de6eadbaa93)
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
