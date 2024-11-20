@@ -127,6 +127,8 @@
 
 </details>
 
+## CDN과 성능 최적화 보고서
+https://excessive-feta-37a.notion.site/CDN-144172880c3a80b8b2d2c6ccb326360a?pvs=4 
 
 ##
 
