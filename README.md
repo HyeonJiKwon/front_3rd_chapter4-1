@@ -32,8 +32,16 @@
      </br>
     
    <ins>해당 repo의 상태를 예로 들어, 새로운 코드가 푸시되면 GitHub Actions가 자동으로 빌드를 실행하고 S3 및 CloudFront에 배포.  </br></ins>
-   * 공유된 yml파일 내 node version을 명시하지 않고 있어 해당 부분 추가하였습니다.
-     </br>
+   * 제공된 yml파일 내 node version을 명시하지 않고 있어 해당 부분 추가하였습니다.
+     ```
+        - name: Set up Node.js
+          uses: actions/setup-node@v3
+          with: 
+            node-version: '20'
+     
+    
+    ![image](https://github.com/user-attachments/assets/1560d433-6a4d-4031-b49f-f46b9ac008bc)
+
 </details>
 
 - <details>
@@ -67,7 +75,7 @@
 
 - <details>
   <summary>캐시 무효화(Cache Invalidation): </summary>
-     CDN 서비스는 콘텐츠를 엣지 서버에 캐싱하여 빠르게 제공하지만, 업데이트된 파일은 즉시 반영되지 않을 수 있습니다. 그래서 캐시를 무효화화여 이전 버전의 캐싱된 파일을 제거하고 최신 파일을 제공하도록 CDN을 업데이트하는 과정입니다.</br>
+     CDN 서비스는 콘텐츠를 엣지 서버에 캐싱하여 빠르게 제공하지만, 업데이트된 파일은 즉시 반영되지 않을 수 있습니다. 그래서 캐시를 무효화화여 이전 버전의 캐싱된 파일을 제거하고 최신 파일을 제공하도록 CDN을 업데이트하는 과정입니다.</br></br>
     <ins>해당 repo의 github 엑션을 돌리고나니 자동으로 무효화가 진행되었는데, 그 이유가 제공된 yml 파일의 아래 코드 때문이였다.</ins></br>
 
        run: |
