@@ -127,14 +127,100 @@
 
 </details>
 
-## CDN과 성능 최적화 보고서
-https://excessive-feta-37a.notion.site/CDN-144172880c3a80b8b2d2c6ccb326360a?pvs=4 
+## [CDN과 성능 최적화 보고서](https://excessive-feta-37a.notion.site/CDN-144172880c3a80b8b2d2c6ccb326360a?pvs=4 )
+## **1. 개요**
 
-##
+이번 보고서는 CloudFront CDN 도입 전(S3 단독 사용 시)과 후의 성능을 분석하고, CDN이 웹사이트 성능 최적화에 미친 영향을 기술합니다. 
+
+비교는 네트워크 요청의 응답 시간, 리소스 로드 속도, 데이터 전송 크기를 기준으로 수행되었습니다.
+
+- S3 버킷 웹사이트 엔드포인트: [http://hanghaebucket.s3-website-us-east-1.amazonaws.com](http://hanghaebucket.s3-website-us-east-1.amazonaws.com/)
+- CloudFrount 배포 도메인 이름: [https://dlals0b0r7y3w.cloudfront.net](https://dlals0b0r7y3w.cloudfront.net/)
+  
+## **2. 비교 분석**
+<img width="1035" alt="스크린샷 2024-11-21 오후 5 33 48" src="https://github.com/user-attachments/assets/c1d0fae2-57fd-43ee-9153-2b5d777e3549">
+
+### **(1) 네트워크 요청 응답 속도**
+
+- **CDN 도입 전(S3 단독 사용)**
+    - 주요 리소스 파일(document, script, stylesheet)의 요청 응답 시간이 상대적으로 길게 측정됨.
+        
+        > document: 433ms
+        stylesheet (.css): 457ms
+        script (.js): 300ms~800ms
+        > 
+    - 리소스 별로 100ms~800ms 이상의 응답 지연이 발생하였음.
+- **CDN 도입 후(CloudFront 사용)**
+    - 동일한 리소스 요청에서 응답 속도가 대폭 개선됨. document 요청의 응답 시간이 평균 **32ms**로 단축됨.
+        
+        > document: 32ms
+        stylesheet (.css): 44ms
+        script (.js): 70ms~150ms
+        > 
+    - 기타 리소스(예: JavaScript, 스타일시트)의 로딩 속도도 50% 이상 개선됨.
+
+### **(2) DOMContentLoaded 및 전체 로드 시간**
+
+- **CDN 도입 전(S3 단독 사용)**
+    
+    ![image](https://github.com/user-attachments/assets/c4f98ac5-e03c-4174-9a05-aa745ab98288)
+
+    - DOMContentLoaded 이벤트: **1.05초**
+    - 전체 로드 시간: **2.23초**
+- **CloudFront 사용:**
+    
+    ![image](https://github.com/user-attachments/assets/3749dc48-efaf-4405-ba59-96713004ea9b)
+
+    - DOMContentLoaded 이벤트: **617ms**
+    - 전체 로드 시간: **869ms**
+
+=> DOM이 사용자 브라우저에 초기 렌더링되기까지 걸리는 시간이 약 **41% 단축**되었으며, 전체 페이지 로드 시간도 약 **61% 개선**되었습니다.
+
+### **(3) 데이터 전송 크기**
+
+- **CDN 도입 전(S3 단독 사용)**
+    <img width="1007" alt="스크린샷 2024-11-21 오후 5 35 14" src="https://github.com/user-attachments/assets/d03ce6cb-e151-4722-9a39-023b29e55237">
+    
+    - 데이터 전송량: **562KB**
+    - 리소스 수: 19개
+    - 전송 속도 : **568KB**
+- **CloudFront 사용:**
+    <img width="999" alt="스크린샷 2024-11-21 오후 5 35 40" src="https://github.com/user-attachments/assets/bf9fdba3-b3c3-4534-8d5c-b39aedf7bdc0">
+    
+    - 데이터 전송량: **562KB**
+    - 리소스 수: 19개
+    - 전송 속도 : **286KB**
+
+=> 데이터 전송 크기에는 차이가 없으나, CloudFront의 **캐싱** 및 **지리적 분산** 특성을 통해 **속도 최적화**가 이루어짐.
+
+### **(4) 캐싱 효과**
+
+- CloudFront는 사용자의 지리적 위치에 따라 가장 가까운 엣지 서버에서 콘텐츠를 제공함.
+- S3의 중앙 서버를 직접 요청하는 방식과 비교했을 때, 캐싱된 콘텐츠를 활용하여 네트워크 지연(*Latency)을 대폭 감소시킴.
+
+## **3. 성능 개선 효과**
+
+- **응답 시간 단축**
+    - document 요청 속도: **433ms → 32ms (약 93% 개선).**
+    - CSS, JS, 이미지와 같은 정적 파일의 응답 속도도 평균 **50~70% 개선**되었습니다.
+- **로드 시간 개선**
+    - DOMContentLoaded 속도: **41% 개선**.
+    - 전체 로드 시간: **61% 개선**.
+- **사용자 경험 향상**
+    - 빠른 로드 시간 덕분에 웹사이트 첫 화면 렌더링 속도가 대폭 개선되었습니다.
+    - CDN을 통해 전 세계 어디서든 일관된 사용자 경험을 제공합니다.
+
+## **4. 결론 및 제안**
+
+- **결론**: CloudFront CDN 도입은 웹사이트의 응답 시간, 로드 시간, 네트워크 효율성을 대폭 개선하며, S3 단독 사용과 비교해 성능 최적화 효과가 뛰어났음.
+- **제안**: 지속적으로 CloudFront 설정을 최적화(예: 캐싱 정책, 파일 압축)하고, 트래픽 패턴에 따라 캐시 적중률(Cache Hit Ratio)을 모니터링하여 추가 개선을 도모할 것을 권장하고 있음.
+
+
+##  
 
 <details>
   <summary>next.js default README</summary>
-  
+
 ## Getting Started
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
